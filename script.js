@@ -38,7 +38,10 @@ function showState(stateToShow) {
   stateToShow.classList.remove("hidden");
 }
 
-
+async function getUser(userName) {
+    
+    
+}
 
 // console.log("initialState:", initialState);
 // console.log("loadingState:", loadingState);
