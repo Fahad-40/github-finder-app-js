@@ -3,7 +3,7 @@ const searchInput = document.querySelector(".search-input");
 
 const initialState = document.querySelector(".initial-state");
 const loadingState = document.querySelector(".loading-state");
-const errorMessage = document.querySelector(".error-state");
+const errorState = document.querySelector(".error-state");
 const profileDataContainer = document.querySelector(".profile-data-container");
 
 const avatarEl = document.querySelector(".js-avatar");
@@ -32,16 +32,31 @@ showState(initialState)
 function showState(stateToShow) {
   initialState.classList.add("hidden");
   loadingState.classList.add("hidden");
-  errorMessage.classList.add("hidden");
+  errorState.classList.add("hidden");
   profileDataContainer.classList.add("hidden");
 
   stateToShow.classList.remove("hidden");
 }
 
 async function getUser(userName) {
-    const response = await fetch("https://api.github.com/users/" + userName);
-    const data = await response.json();
-    console.log(data)
+showState(loadingState)
+
+    try {
+        const response = await fetch("https://api.github.com/users/" + userName);
+        
+        if (!response.ok) {
+             showState(errorState);
+        throw new Error(response.status === 404? "User Not Found!" : "Something went wrong!")
+        
+        }
+        const data = await response.json();
+         showState(profileDataContainer);
+        console.log(data)
+        
+    } catch (error) {
+        errorState.textContent = error.message;
+   showState(errorState);
+    }
 }
 
 // console.log("initialState:", initialState);
