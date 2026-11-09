@@ -2,12 +2,21 @@ const searchForm = document.querySelector(".search-form");
 const searchInput = document.querySelector(".search-input");
 
 const initialState = document.querySelector(".initial-state");
-const emptyState = document.querySelector(".js-empty-state");
-const loadingState = document.querySelector(".js-loading-state");
-const errorState = document.querySelector(".js-error-state");
-const errorMessage = document.querySelector(".js-error-message");
-const resultSection = document.querySelector(".js-result");
+const loadingState = document.querySelector(".loading-state");
+const errorMessage = document.querySelector(".error-state");
+const resultSection = document.querySelector(".profile-data-container");
 
+const avatarEl = document.querySelector(".js-avatar");
+const nameEl = document.querySelector(".js-name");
+const loginEl = document.querySelector(".js-login");
+const bioEl = document.querySelector(".js-bio");
+const reposCountEl = document.querySelector(".js-repos-count");
+const followersCountEl = document.querySelector(".js-followers-count");
+const followingCountEl = document.querySelector(".js-following-count");
+const profileLinkEl = document.querySelector(".js-profile-link");
+
+// const emptyState = document.querySelector(".empty-state");
+// const errorState = document.querySelector(".error-state");
 
 searchForm.addEventListener("submit" , (e) => {
 e.preventDefault();
@@ -19,3 +28,17 @@ if (userName === " ") {
 console.log(userName)
 searchForm.reset();
 })
+
+console.log("initialState:", initialState);
+console.log("loadingState:", loadingState);
+console.log("errorMessage:", errorMessage);
+console.log("resultSection:", resultSection);
+
+console.log("avatarEl:", avatarEl);
+console.log("nameEl:", nameEl);
+console.log("loginEl:", loginEl);
+console.log("bioEl:", bioEl);
+console.log("reposCountEl:", reposCountEl);
+console.log("followersCountEl:", followersCountEl);
+console.log("followingCountEl:", followingCountEl);
+console.log("profileLinkEl:", profileLinkEl);
