@@ -44,7 +44,7 @@ async function getUser(userName) {
     try {
         const response = await fetch("https://api.github.com/users/" + userName);
         const data = await response.json();
-        renderUser(userData)
+        renderUser(data)
         console.log(data)
 
     } catch (error) {
@@ -73,77 +73,79 @@ function renderUser(userData) {
 
     profileDataContainer.innerHTML = `
     
-      <aside class="profile-card-container w-full md:w-1/3 lg:w-[320px] bg-gh-card border border-gh-border rounded-2xl p-6 shadow-sm">
-                <!-- Avatar & Identity -->
-                <div class=" flex md:flex-col items-center md:items-start gap-5">
-                    <img src="${userData.avatar_url}" alt="Avatar" class="js-avatar w-24 h-24 md:w-full md:h-auto md:aspect-square rounded-full border border-gh-border shadow-md object-cover">
-                    <div>
-                        <h2 class="js-name text-2xl font-bold text-gh-text leading-tight">GitHub</h2>
-                        <p class="js-login text-xl text-gh-muted font-light">@github</p>
-                    </div>
-                </div>
+   <aside class="profile-card-container w-full md:w-1/3 lg:w-[320px] bg-gh-card border border-gh-border rounded-2xl p-6 shadow-sm">
+    
+    <div class="flex md:flex-col items-center md:items-start gap-5">
+        <img src="${userData.avatar_url}" alt="${userData.name || userData.login}'s Avatar" class="js-avatar w-24 h-24 md:w-full md:h-auto md:aspect-square rounded-full border border-gh-border shadow-md object-cover">
+        <div>
+            <h2 class="js-name text-2xl font-bold text-gh-text leading-tight">${userData.name || 'GitHub User'}</h2>
+            <p class="js-login text-xl text-gh-muted font-light">@${userData.login}</p>
+        </div>
+    </div>
 
-                <!-- Bio -->
-                <p class="js-bio text-gh-text mt-5 leading-relaxed text-sm">How people build software. The world's largest software development platform.</p>
+    <!-- Bio -->
+    <p class="js-bio text-gh-text mt-5 leading-relaxed text-sm">${userData.bio || 'No bio available'}</p>
 
-                <!-- Followers/Following -->
-                <div class="flex items-center gap-4 mt-5 text-sm text-gh-muted">
-                    <a href="#" class="hover:text-gh-focus transition-colors flex items-center gap-1.5">
-                        <svg class="w-4 h-4 text-gh-muted" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"></path></svg>
-                        <span class="js-followers-count font-semibold text-gh-text">38.9k</span> followers
-                    </a>
-                    <span>·</span>
-                    <a href="#" class="hover:text-gh-focus transition-colors">
-                        <span class="js-following-count font-semibold text-gh-text">0</span> following
-                    </a>
-                </div>
+    <!-- Followers/Following -->
+    <div class="flex items-center gap-4 mt-5 text-sm text-gh-muted">
+        <a href="https://github.com{userData.login}?tab=followers" target="_blank" class="hover:text-gh-focus transition-colors flex items-center gap-1.5">
+            <svg class="w-4 h-4 text-gh-muted" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"></path></svg>
+            <span class="js-followers-count font-semibold text-gh-text">${userData.followers}</span> followers
+        </a>
+        <span>·</span>
+        <a href="https://github.com{userData.login}?tab=following" target="_blank" class="hover:text-gh-focus transition-colors">
+            <span class="js-following-count font-semibold text-gh-text">${userData.following}</span> following
+        </a>
+    </div>
 
-                <!-- Meta Links (Location, Website, Twitter) -->
-                <ul class="mt-5 space-y-3 text-sm text-gh-text">
+    <!-- Meta Links (Location, Website) -->
+    <ul class="mt-5 space-y-3 text-sm text-gh-text">
                     <li class="flex items-center gap-3">
                         <svg class="w-4 h-4 text-gh-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                        <span>San Francisco, CA</span>
+                        <span>${userData.location}</span>
                     </li>
                     <li class="flex items-center gap-3">
                         <svg class="w-4 h-4 text-gh-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
-                        <a href="https://github.com/about" target="_blank" class="hover:underline hover:text-gh-focus truncate">https://github.com/about</a>
+                        <a href="https://github.com/about" target="_blank" class="hover:underline hover:text-gh-focus truncate">${userData.blog.startsWith('http') ? userData.blog : 'https://' + userData.blog}</a>
                     </li>
                 </ul>
 
-                <!-- Action Button -->
-                <a href="#" target="_blank" class="js-profile-link mt-6 w-full flex items-center justify-center bg-gh-accent hover:bg-gh-accentHover text-white font-medium py-2.5 px-4 rounded-lg transition-colors shadow-sm">
-                    View on GitHub
-                </a>
-            </aside>
+    <!-- Action Button -->
+    <a href="${userData.html_url}" target="_blank" class="js-profile-link mt-6 w-full flex items-center justify-center bg-gh-accent hover:bg-gh-accentHover text-white font-medium py-2.5 px-4 rounded-lg transition-colors shadow-sm">
+        View on GitHub
+    </a>
+</aside>
 
-            <!-- RIGHT COLUMN: Stats & Repositories -->
-            <div class="flex-1 w-full flex flex-col gap-6">
-                
-                <!-- Stats Grid -->
-                <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                    <div class="bg-gh-card border border-gh-border rounded-2xl p-5 flex flex-col justify-center items-center text-center shadow-sm">
-                        <span class="text-gh-muted text-xs font-semibold uppercase tracking-wider mb-1">Public Repos</span>
-                        <span class="js-repos-count text-3xl font-bold text-gh-text">481</span>
-                    </div>
-                    <div class="bg-gh-card border border-gh-border rounded-2xl p-5 flex flex-col justify-center items-center text-center shadow-sm">
-                        <span class="text-gh-muted text-xs font-semibold uppercase tracking-wider mb-1">Public Gists</span>
-                        <span class="text-3xl font-bold text-gh-text">12</span>
-                    </div>
-                    <div class="bg-gh-card border border-gh-border rounded-2xl p-5 flex flex-col justify-center items-center text-center shadow-sm col-span-2 sm:col-span-1">
-                        <span class="text-gh-muted text-xs font-semibold uppercase tracking-wider mb-1">Joined</span>
-                        <span class="text-xl font-bold text-gh-text mt-1">May 2008</span>
-                    </div>
-                </div>
+<!-- RIGHT COLUMN: Stats & Repositories -->
+<div class="flex-1 w-full flex flex-col gap-6">
+    
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+        <div class="bg-gh-card border border-gh-border rounded-2xl p-5 flex flex-col justify-center items-center text-center shadow-sm">
+            <span class="text-gh-muted text-xs font-semibold uppercase tracking-wider mb-1">Public Repos</span>
+            <span class="js-repos-count text-3xl font-bold text-gh-text">${userData.public_repos}</span>
+        </div>
+        <div class="bg-gh-card border border-gh-border rounded-2xl p-5 flex flex-col justify-center items-center text-center shadow-sm">
+            <span class="text-gh-muted text-xs font-semibold uppercase tracking-wider mb-1">Public Gists</span>
+            <span class="text-3xl font-bold text-gh-text">${userData.public_gists}</span>
+        </div>
+        <div class="bg-gh-card border border-gh-border rounded-2xl p-5 flex flex-col justify-center items-center text-center shadow-sm col-span-2 sm:col-span-1">
+            <span class="text-gh-muted text-xs font-semibold uppercase tracking-wider mb-1">Joined</span>
+            <span class="text-xl font-bold text-gh-text mt-1">
+                ${new Date(userData.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+            </span>
+        </div>
+    </div>
 
-                <!-- Latest Repos Block -->
-                <div class="mt-2">
-                    <h3 class="text-lg font-semibold text-gh-text mb-4 flex items-center gap-2">
-                        <svg class="w-5 h-5 text-gh-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z"></path></svg>
-                        Latest Repositories
-                    </h3>
-                    
-                    <div id="repos-list-container" class="grid grid-cols-1 gap-4">
-                        
+    <!-- Latest Repos Block -->
+    <div class="mt-2">
+        <h3 class="text-lg font-semibold text-gh-text mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-gh-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z"></path></svg>
+            Latest Repositories
+        </h3>
+        
+        <div id="repos-list-container" class="grid grid-cols-1 gap-4">
+
                         <!-- Repo Card Item 1 -->
                         <a href="#" target="_blank" class="repo-card group bg-gh-card border border-gh-border hover:border-gh-muted rounded-xl p-5 transition-all duration-200 hover:-translate-y-0.5 shadow-sm block">
                             <div class="flex items-start justify-between gap-4">
