@@ -43,12 +43,17 @@ async function getUser(userName) {
 
     try {
         const response = await fetch("https://api.github.com/users/" + userName);
+
+        if (!response.ok) {
+            throw new Error("User not found");
+        }
         const data = await response.json();
         renderUser(data)
+        showState(profileDataContainer);
         console.log(data)
 
     } catch (error) {
-        errorState.textContent = error.message;
+     
         showState(errorState);
     }
 }
@@ -196,3 +201,16 @@ function renderUser(userData) {
     
     `
 }
+
+
+
+
+// Username type karke search (button ya Enter)
+// Profile card: photo, naam, repos ki ginti, followers (jo tum ne chune) folloers (also)
+// Loading state: fetch ke dauran “Loading...” dikhe
+// Error state: user na mile to “User not found” dikhe
+// Shuru ki khali state: pehli baar page khulne par “Search a GitHub username” jaisa message
+// Bio aur “View Profile” link
+// Latest 5 repos ki list:
+// Recent searches
+// Rate Limit Indicator (api request limit)
