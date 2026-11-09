@@ -4,7 +4,7 @@ const searchInput = document.querySelector(".search-input");
 const initialState = document.querySelector(".initial-state");
 const loadingState = document.querySelector(".loading-state");
 const errorMessage = document.querySelector(".error-state");
-const resultSection = document.querySelector(".profile-data-container");
+const profileDataContainer = document.querySelector(".profile-data-container");
 
 const avatarEl = document.querySelector(".js-avatar");
 const nameEl = document.querySelector(".js-name");
@@ -28,17 +28,27 @@ if (userName === " ") {
 console.log(userName)
 searchForm.reset();
 })
+showState(initialState)
+function showState(stateToShow) {
+  initialState.classList.add("hidden");
+  loadingState.classList.add("hidden");
+  errorMessage.classList.add("hidden");
+  profileDataContainer.classList.add("hidden");
 
-console.log("initialState:", initialState);
-console.log("loadingState:", loadingState);
-console.log("errorMessage:", errorMessage);
-console.log("resultSection:", resultSection);
+  stateToShow.classList.remove("hidden");
+}
 
-console.log("avatarEl:", avatarEl);
-console.log("nameEl:", nameEl);
-console.log("loginEl:", loginEl);
-console.log("bioEl:", bioEl);
-console.log("reposCountEl:", reposCountEl);
-console.log("followersCountEl:", followersCountEl);
-console.log("followingCountEl:", followingCountEl);
-console.log("profileLinkEl:", profileLinkEl);
+
+// console.log("initialState:", initialState);
+// console.log("loadingState:", loadingState);
+// console.log("errorMessage:", errorMessage);
+// console.log("resultSection:", resultSection);
+
+// console.log("avatarEl:", avatarEl);
+// console.log("nameEl:", nameEl);
+// console.log("loginEl:", loginEl);
+// console.log("bioEl:", bioEl);
+// console.log("reposCountEl:", reposCountEl);
+// console.log("followersCountEl:", followersCountEl);
+// console.log("followingCountEl:", followingCountEl);
+// console.log("profileLinkEl:", profileLinkEl);
