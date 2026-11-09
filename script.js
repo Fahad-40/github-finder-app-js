@@ -25,7 +25,7 @@ const userName = searchInput.value.trim();
 if (userName === " ") {
     return;
 }
-console.log(userName)
+getUser(userName);
 searchForm.reset();
 })
 showState(initialState)
