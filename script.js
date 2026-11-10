@@ -14,15 +14,15 @@ function saveRecentToLS() {
   localStorage.setItem("recentSearches", JSON.stringify(recentSearches));
 }
 
-function addRecentSearch(login) {
-  recentSearches = recentSearches.filter(function (name) {
-    return name.toLowerCase() !== login.toLowerCase();
-  });
-  recentSearches.unshift(login);
-  recentSearches = recentSearches.slice(0, 5);
-  saveRecentToLS();
-  renderRecentSearches();
-}
+// function addRecentSearch(login) {
+//   recentSearches = recentSearches.filter(function (name) {
+//     return name.toLowerCase() !== login.toLowerCase();
+//   });
+//   recentSearches.unshift(login);
+//   recentSearches = recentSearches.slice(0, 5);
+//   saveRecentToLS();
+//   renderRecentSearches();
+// }
 
 function renderRecentSearches() {
   recentSearchesContainer.innerHTML = recentSearches.map(function (name) {
@@ -44,7 +44,7 @@ searchForm.addEventListener("submit", (e) => {
 
 showState(initialState)
 getSearchLimit()
-      renderRecentSearches()
+renderRecentSearches()
 
 function showState(stateToShow) {
     initialState.classList.add("hidden");
