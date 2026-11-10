@@ -60,16 +60,14 @@
                 <!-- Rate Limit Indicator -->
                 <div class="absolute -bottom-6 right-1 text-[11px] font-semibold tracking-wider uppercase text-gh-muted flex items-center gap-1.5">
                     <span class="w-1.5 h-1.5 rounded-full bg-gh-accent"></span>
-                    API Requests: <span id="rate-limit-text">58/60 remaining</span>
+                    <span id="rate-limit-text"></span>
                 </div>
             </div>
 
             <!-- Recent Searches -->
-            <div class="flex items-center gap-3 mt-4 overflow-x-auto pb-2 scrollbar-hide">
+            <div class="recent-searches-container flex items-center gap-3 mt-4 overflow-x-auto pb-2 scrollbar-hide">
                 <span class="text-xs text-gh-muted font-medium uppercase tracking-wider">Recent:</span>
                 <button class="recent-search-tag whitespace-nowrap px-3 py-1.5 rounded-full bg-gh-card border border-gh-border text-sm text-gh-text hover:border-gh-muted transition-colors">torvalds</button>
-                <button class="recent-search-tag whitespace-nowrap px-3 py-1.5 rounded-full bg-gh-card border border-gh-border text-sm text-gh-text hover:border-gh-muted transition-colors">gaearon</button>
-                <button class="recent-search-tag whitespace-nowrap px-3 py-1.5 rounded-full bg-gh-card border border-gh-border text-sm text-gh-text hover:border-gh-muted transition-colors">yyx990803</button>
             </div>
         </header>
 

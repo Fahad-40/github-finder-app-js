@@ -1,22 +1,35 @@
 const searchForm = document.querySelector(".search-form");
 const searchInput = document.querySelector(".search-input");
-
 const initialState = document.querySelector(".initial-state");
 const loadingState = document.querySelector(".loading-state");
 const errorState = document.querySelector(".error-state");
 const profileDataContainer = document.querySelector(".profile-data-container");
+const recentSearchesContainer = document.querySelector(".recent-searches-container");
+const rateLimitText = document.querySelector("#rate-limit-text");
+const reposListContainer = document.querySelector(".repos-list-container") || null;
 
-const avatarEl = document.querySelector(".js-avatar");
-const nameEl = document.querySelector(".js-name");
-const loginEl = document.querySelector(".js-login");
-const bioEl = document.querySelector(".js-bio");
-const reposCountEl = document.querySelector(".js-repos-count");
-const followersCountEl = document.querySelector(".js-followers-count");
-const followingCountEl = document.querySelector(".js-following-count");
-const profileLinkEl = document.querySelector(".js-profile-link");
+let recentSearches = [];
 
-// const emptyState = document.querySelector(".empty-state");
-// const errorState = document.querySelector(".error-state");
+function saveRecentToLS() {
+  localStorage.setItem("recentSearches", JSON.stringify(recentSearches));
+}
+
+function addRecentSearch(login) {
+  recentSearches = recentSearches.filter(function (name) {
+    return name.toLowerCase() !== login.toLowerCase();
+  });
+  recentSearches.unshift(login);
+  recentSearches = recentSearches.slice(0, 5);
+  saveRecentToLS();
+  renderRecentSearches();
+}
+
+function renderRecentSearches() {
+  recentSearchesContainer.innerHTML = recentSearches.map(function (name) {
+      return `<button class="recent-search-tag whitespace-nowrap px-3 py-1.5 rounded-full bg-gh-card border border-gh-border text-sm text-gh-text hover:border-gh-muted transition-colors">${name}</button>`;
+      
+  }).join(" ");
+}
 
 searchForm.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -28,7 +41,11 @@ searchForm.addEventListener("submit", (e) => {
     getUser(userName);
     searchForm.reset();
 })
+
 showState(initialState)
+getSearchLimit()
+      renderRecentSearches()
+
 function showState(stateToShow) {
     initialState.classList.add("hidden");
     loadingState.classList.add("hidden");
@@ -48,30 +65,49 @@ async function getUser(userName) {
             throw new Error("User not found");
         }
         const data = await response.json();
+        addRecentSearch(data.login)
         renderUser(data)
+        getRepos(userName);
+        getSearchLimit()
         showState(profileDataContainer);
         console.log(data)
 
     } catch (error) {
-     
         showState(errorState);
     }
 }
 
-// console.log("initialState:", initialState);
-// console.log("loadingState:", loadingState);
-// console.log("errorMessage:", errorMessage);
-// console.log("resultSection:", resultSection);
+async function getRepos(userName) {
+    const response = await fetch("https://api.github.com/users/" + userName + "/repos?sort=updated&per_page=3");
+    const repos = await response.json();
+    renderRepos(repos);
+    console.log(repos)
+}
 
-// console.log("avatarEl:", avatarEl);
-// console.log("nameEl:", nameEl);
-// console.log("loginEl:", loginEl);
-// console.log("bioEl:", bioEl);
-// console.log("reposCountEl:", reposCountEl);
-// console.log("followersCountEl:", followersCountEl);
-// console.log("followingCountEl:", followingCountEl);
-// console.log("profileLinkEl:", profileLinkEl);
-
+function createRepoCard(repo) {
+    return `
+    <a href="${repo.html_url}" target="_blank" class="repo-card group bg-gh-card border border-gh-border hover:border-gh-muted rounded-xl p-5 transition-all duration-200 hover:-translate-y-0.5 shadow-sm block">
+      <div class="flex items-start justify-between gap-4">
+        <h4 class="text-gh-focus font-semibold text-lg group-hover:underline truncate">${repo.name}</h4>
+        <span class="px-2.5 py-0.5 rounded-full border border-gh-border text-xs text-gh-muted font-medium bg-gh-bg whitespace-nowrap">Public</span>
+      </div>
+      <p class="text-sm text-gh-muted mt-2 line-clamp-2 leading-relaxed">${repo.description || "No description"}</p>
+      <div class="flex items-center gap-4 mt-4 text-xs text-gh-muted font-medium">
+        <div class="flex items-center gap-1.5">
+          <span class="w-3 h-3 rounded-full bg-yellow-300 shadow-sm border border-black/10"></span> ${repo.language || "Not specified"}
+        </div>
+        <div class="flex items-center gap-1">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.787 1.4 8.168L12 18.896l-7.334 3.869 1.4-8.168L.132 9.21l8.2-1.192z"></path></svg>
+          ${repo.stargazers_count}
+        </div>
+        <div class="flex items-center gap-1">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M11.739 12.033a3 3 0 10-3-5.196L4.502 9.278a3 3 0 101.498 2.6l4.237-2.441a2.983 2.983 0 001.502.596v4.468a3 3 0 101.5 0V10.033a3 3 0 10-1.5-5.196L7.502 2.396a3 3 0 10-1.498 2.6l4.237 2.441a2.983 2.983 0 001.502-.596v4.468a3 3 0 10-.004 2.724z"></path></svg>
+          ${repo.forks_count}
+        </div>
+      </div>
+    </a>
+  `;
+}
 
 function renderUser(userData) {
     profileDataContainer.innerHTML = "";
@@ -151,49 +187,6 @@ function renderUser(userData) {
         
         <div id="repos-list-container" class="grid grid-cols-1 gap-4">
 
-                        <!-- Repo Card Item 1 -->
-                        <a href="#" target="_blank" class="repo-card group bg-gh-card border border-gh-border hover:border-gh-muted rounded-xl p-5 transition-all duration-200 hover:-translate-y-0.5 shadow-sm block">
-                            <div class="flex items-start justify-between gap-4">
-                                <h4 class="text-gh-focus font-semibold text-lg group-hover:underline truncate">github/copilot-docs</h4>
-                                <span class="px-2.5 py-0.5 rounded-full border border-gh-border text-xs text-gh-muted font-medium bg-gh-bg whitespace-nowrap">Public</span>
-                            </div>
-                            <p class="text-sm text-gh-muted mt-2 line-clamp-2 leading-relaxed">Documentation for GitHub Copilot, the AI pair programmer.</p>
-                            <div class="flex items-center gap-4 mt-4 text-xs text-gh-muted font-medium">
-                                <div class="flex items-center gap-1.5">
-                                    <span class="w-3 h-3 rounded-full bg-yellow-300 shadow-sm border border-black/10"></span> JavaScript
-                                </div>
-                                <div class="flex items-center gap-1 hover:text-gh-focus transition-colors">
-                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.787 1.4 8.168L12 18.896l-7.334 3.869 1.4-8.168L.132 9.21l8.2-1.192z"></path></svg>
-                                    1.2k
-                                </div>
-                                <div class="flex items-center gap-1 hover:text-gh-focus transition-colors">
-                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M11.739 12.033a3 3 0 10-3-5.196L4.502 9.278a3 3 0 101.498 2.6l4.237-2.441a2.983 2.983 0 001.502.596v4.468a3 3 0 101.5 0V10.033a3 3 0 10-1.5-5.196L7.502 2.396a3 3 0 10-1.498 2.6l4.237 2.441a2.983 2.983 0 001.502-.596v4.468a3 3 0 10-.004 2.724z"></path></svg>
-                                    342
-                                </div>
-                            </div>
-                        </a>
-
-                        <!-- Repo Card Item 2 -->
-                        <a href="#" target="_blank" class="repo-card group bg-gh-card border border-gh-border hover:border-gh-muted rounded-xl p-5 transition-all duration-200 hover:-translate-y-0.5 shadow-sm block">
-                            <div class="flex items-start justify-between gap-4">
-                                <h4 class="text-gh-focus font-semibold text-lg group-hover:underline truncate">github/linguist</h4>
-                                <span class="px-2.5 py-0.5 rounded-full border border-gh-border text-xs text-gh-muted font-medium bg-gh-bg whitespace-nowrap">Public</span>
-                            </div>
-                            <p class="text-sm text-gh-muted mt-2 line-clamp-2 leading-relaxed">Language Savant. If your repository's language is being reported incorrectly, send us a pull request!</p>
-                            <div class="flex items-center gap-4 mt-4 text-xs text-gh-muted font-medium">
-                                <div class="flex items-center gap-1.5">
-                                    <span class="w-3 h-3 rounded-full bg-[#701516] shadow-sm border border-black/10"></span> Ruby
-                                </div>
-                                <div class="flex items-center gap-1">
-                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.787 1.4 8.168L12 18.896l-7.334 3.869 1.4-8.168L.132 9.21l8.2-1.192z"></path></svg>
-                                    10.5k
-                                </div>
-                                <div class="flex items-center gap-1">
-                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M11.739 12.033a3 3 0 10-3-5.196L4.502 9.278a3 3 0 101.498 2.6l4.237-2.441a2.983 2.983 0 001.502.596v4.468a3 3 0 101.5 0V10.033a3 3 0 10-1.5-5.196L7.502 2.396a3 3 0 10-1.498 2.6l4.237 2.441a2.983 2.983 0 001.502-.596v4.468a3 3 0 10-.004 2.724z"></path></svg>
-                                    3.1k
-                                </div>
-                            </div>
-                        </a>
 
                     </div>
                 </div>
@@ -202,7 +195,24 @@ function renderUser(userData) {
     `
 }
 
+function renderRepos(repos) {
+    const reposListContainer = document.querySelector("#repos-list-container");
 
+    if (!reposListContainer) return;
+
+    if (!repos || repos.length === 0) {
+        reposListContainer.innerHTML = `<p class="text-gh-muted text-sm py-2">No public repositories found.</p>`;
+        return;
+    }
+    reposListContainer.innerHTML = repos.map(createRepoCard).join("");
+}
+
+async function getSearchLimit() {
+    const response = await fetch("https://api.github.com/rate_limit");
+    const data = await response.json();
+    const core = data.resources.core;
+    rateLimitText.textContent = `Requests left: ${core.remaining} / ${core.limit}`;
+}
 
 
 // Username type karke search (button ya Enter)
@@ -214,3 +224,76 @@ function renderUser(userData) {
 // Latest 5 repos ki list:
 // Recent searches
 // Rate Limit Indicator (api request limit)
+
+
+// const avatarEl = document.querySelector(".js-avatar");
+// const nameEl = document.querySelector(".js-name");
+// const loginEl = document.querySelector(".js-login");
+// const bioEl = document.querySelector(".js-bio");
+// const reposCountEl = document.querySelector(".js-repos-count");
+// const followersCountEl = document.querySelector(".js-followers-count");
+// const followingCountEl = document.querySelector(".js-following-count");
+// const profileLinkEl = document.querySelector(".js-profile-link");
+
+// const emptyState = document.querySelector(".empty-state");
+// const errorState = document.querySelector(".error-state");
+
+// console.log("initialState:", initialState);
+// console.log("loadingState:", loadingState);
+// console.log("errorMessage:", errorMessage);
+// console.log("resultSection:", resultSection);
+
+// console.log("avatarEl:", avatarEl);
+// console.log("nameEl:", nameEl);
+// console.log("loginEl:", loginEl);
+// console.log("bioEl:", bioEl);
+// console.log("reposCountEl:", reposCountEl);
+// console.log("followersCountEl:", followersCountEl);
+// console.log("followingCountEl:", followingCountEl);
+// console.log("profileLinkEl:", profileLinkEl);
+
+
+
+                        // <!-- Repo Card Item 1 -->
+                        // <a href="#" target="_blank" class="repo-card group bg-gh-card border border-gh-border hover:border-gh-muted rounded-xl p-5 transition-all duration-200 hover:-translate-y-0.5 shadow-sm block">
+                        //     <div class="flex items-start justify-between gap-4">
+                        //         <h4 class="text-gh-focus font-semibold text-lg group-hover:underline truncate">github/copilot-docs</h4>
+                        //         <span class="px-2.5 py-0.5 rounded-full border border-gh-border text-xs text-gh-muted font-medium bg-gh-bg whitespace-nowrap">Public</span>
+                        //     </div>
+                        //     <p class="text-sm text-gh-muted mt-2 line-clamp-2 leading-relaxed">Documentation for GitHub Copilot, the AI pair programmer.</p>
+                        //     <div class="flex items-center gap-4 mt-4 text-xs text-gh-muted font-medium">
+                        //         <div class="flex items-center gap-1.5">
+                        //             <span class="w-3 h-3 rounded-full bg-yellow-300 shadow-sm border border-black/10"></span> JavaScript
+                        //         </div>
+                        //         <div class="flex items-center gap-1 hover:text-gh-focus transition-colors">
+                        //             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.787 1.4 8.168L12 18.896l-7.334 3.869 1.4-8.168L.132 9.21l8.2-1.192z"></path></svg>
+                        //             1.2k
+                        //         </div>
+                        //         <div class="flex items-center gap-1 hover:text-gh-focus transition-colors">
+                        //             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M11.739 12.033a3 3 0 10-3-5.196L4.502 9.278a3 3 0 101.498 2.6l4.237-2.441a2.983 2.983 0 001.502.596v4.468a3 3 0 101.5 0V10.033a3 3 0 10-1.5-5.196L7.502 2.396a3 3 0 10-1.498 2.6l4.237 2.441a2.983 2.983 0 001.502-.596v4.468a3 3 0 10-.004 2.724z"></path></svg>
+                        //             342
+                        //         </div>
+                        //     </div>
+                        // </a>
+
+                        // <!-- Repo Card Item 2 -->
+                        // <a href="#" target="_blank" class="repo-card group bg-gh-card border border-gh-border hover:border-gh-muted rounded-xl p-5 transition-all duration-200 hover:-translate-y-0.5 shadow-sm block">
+                        //     <div class="flex items-start justify-between gap-4">
+                        //         <h4 class="text-gh-focus font-semibold text-lg group-hover:underline truncate">github/linguist</h4>
+                        //         <span class="px-2.5 py-0.5 rounded-full border border-gh-border text-xs text-gh-muted font-medium bg-gh-bg whitespace-nowrap">Public</span>
+                        //     </div>
+                        //     <p class="text-sm text-gh-muted mt-2 line-clamp-2 leading-relaxed">Language Savant. If your repository's language is being reported incorrectly, send us a pull request!</p>
+                        //     <div class="flex items-center gap-4 mt-4 text-xs text-gh-muted font-medium">
+                        //         <div class="flex items-center gap-1.5">
+                        //             <span class="w-3 h-3 rounded-full bg-[#701516] shadow-sm border border-black/10"></span> Ruby
+                        //         </div>
+                        //         <div class="flex items-center gap-1">
+                        //             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.787 1.4 8.168L12 18.896l-7.334 3.869 1.4-8.168L.132 9.21l8.2-1.192z"></path></svg>
+                        //             10.5k
+                        //         </div>
+                        //         <div class="flex items-center gap-1">
+                        //             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M11.739 12.033a3 3 0 10-3-5.196L4.502 9.278a3 3 0 101.498 2.6l4.237-2.441a2.983 2.983 0 001.502.596v4.468a3 3 0 101.5 0V10.033a3 3 0 10-1.5-5.196L7.502 2.396a3 3 0 10-1.498 2.6l4.237 2.441a2.983 2.983 0 001.502-.596v4.468a3 3 0 10-.004 2.724z"></path></svg>
+                        //             3.1k
+                        //         </div>
+                        //     </div>
+                        // </a>
