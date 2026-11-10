@@ -14,19 +14,25 @@ function saveRecentToLS() {
   localStorage.setItem("recentSearches", JSON.stringify(recentSearches));
 }
 
-// function addRecentSearch(login) {
-//   recentSearches = recentSearches.filter(function (name) {
-//     return name.toLowerCase() !== login.toLowerCase();
-//   });
-//   recentSearches.unshift(login);
-//   recentSearches = recentSearches.slice(0, 5);
-//   saveRecentToLS();
-//   renderRecentSearches();
-// }
+function addRecentSearch(login) {
+  recentSearches = recentSearches.filter(function (name) {
+    return name.toLowerCase() !== login.toLowerCase();
+  });
+  recentSearches.unshift(login);
+  recentSearches = recentSearches.slice(0, 5);
+  saveRecentToLS();
+  renderRecentSearches();
+}
+
+recentSearchesContainer.addEventListener("click" , (e) => {
+const chip = e.target.closest("[data-userName]");
+if (!chip) return;
+getUser(chip.dataset.userName);
+})
 
 function renderRecentSearches() {
   recentSearchesContainer.innerHTML = recentSearches.map(function (name) {
-      return `<button class="recent-search-tag whitespace-nowrap px-3 py-1.5 rounded-full bg-gh-card border border-gh-border text-sm text-gh-text hover:border-gh-muted transition-colors">${name}</button>`;
+      return `<button data-userName=${name} class="recent-search-tag whitespace-nowrap px-3 py-1.5 rounded-full bg-gh-card border border-gh-border text-sm text-gh-text hover:border-gh-muted transition-colors">${name}</button>`;
       
   }).join(" ");
 }
