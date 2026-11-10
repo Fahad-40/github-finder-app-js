@@ -90,6 +90,17 @@ async function getRepos(userName) {
     console.log(repos)
 }
 
+const languageColors = {
+  JavaScript: "bg-yellow-300",
+  TypeScript: "bg-blue-500",
+  Python: "bg-blue-400",
+  HTML: "bg-orange-500",
+  CSS: "bg-purple-500",
+  Java: "bg-amber-700",
+  PHP: "bg-indigo-400",
+  "C++": "bg-pink-500",
+};
+
 function createRepoCard(repo) {
     return `
     <a href="${repo.html_url}" target="_blank" class="repo-card group bg-gh-card border border-gh-border hover:border-gh-muted rounded-xl p-5 transition-all duration-200 hover:-translate-y-0.5 shadow-sm block">
@@ -100,7 +111,7 @@ function createRepoCard(repo) {
       <p class="text-sm text-gh-muted mt-2 line-clamp-2 leading-relaxed">${repo.description || "No description"}</p>
       <div class="flex items-center gap-4 mt-4 text-xs text-gh-muted font-medium">
         <div class="flex items-center gap-1.5">
-          <span class="w-3 h-3 rounded-full bg-yellow-300 shadow-sm border border-black/10"></span> ${repo.language || "Not specified"}
+          <span class="w-3 h-3 rounded-full ${languageColors[repo.language] || "bg-gray-400"} shadow-sm border border-black/10"></span> ${repo.language || "Not specified"}
         </div>
         <div class="flex items-center gap-1">
           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.787 1.4 8.168L12 18.896l-7.334 3.869 1.4-8.168L.132 9.21l8.2-1.192z"></path></svg>
