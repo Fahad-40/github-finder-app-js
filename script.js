@@ -25,14 +25,14 @@ function addRecentSearch(login) {
 }
 
 recentSearchesContainer.addEventListener("click" , (e) => {
-const chip = e.target.closest("[data-userName]");
+const chip = e.target.closest("[data-username]");
 if (!chip) return;
-getUser(chip.dataset.userName);
+getUser(chip.dataset.username);
 })
 
 function renderRecentSearches() {
   recentSearchesContainer.innerHTML = recentSearches.map(function (name) {
-      return `<button data-userName=${name} class="recent-search-tag whitespace-nowrap px-3 py-1.5 rounded-full bg-gh-card border border-gh-border text-sm text-gh-text hover:border-gh-muted transition-colors">${name}</button>`;
+      return ` <button data-username="${name}" class="recent-search-tag whitespace-nowrap px-3 py-1.5 rounded-full bg-gh-card border border-gh-border text-sm text-gh-text hover:border-gh-muted transition-colors">${name}</button>`;
       
   }).join(" ");
 }
